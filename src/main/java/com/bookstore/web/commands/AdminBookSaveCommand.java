@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.model.Book;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.BookService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,9 +13,11 @@ import java.math.BigDecimal;
 public class AdminBookSaveCommand implements Command {
 
     private final BookService bookService;
+    private final AuditService auditService;
 
-    public AdminBookSaveCommand(BookService bookService) {
+    public AdminBookSaveCommand(BookService bookService, AuditService auditService) {
         this.bookService = bookService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -33,7 +36,9 @@ public class AdminBookSaveCommand implements Command {
             book.setCoverPath(CommandSupport.optionalString(req, "coverPath"));
             book.setIntro(CommandSupport.optionalString(req, "intro"));
             book.setStatus(CommandSupport.optionalString(req, "status"));
-            bookService.save(book);
+            long bookId = bookService.save(book);
+            CommandSupport.audit(req, auditService, "BOOK_SAVE",
+                    "bookId=" + bookId + ",status=" + book.getStatus());
             CommandSupport.redirectWithMessage(req, resp, "/app/admin/books", "message", "图书已保存。");
         } catch (RuntimeException e) {
             CommandSupport.redirectWithMessage(req, resp, "/app/admin/books",

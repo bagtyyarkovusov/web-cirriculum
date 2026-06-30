@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fn" uri="jakarta.tags.functions" %>
+<%@ taglib prefix="shop" uri="/WEB-INF/tlds/shop.tld" %>
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -44,7 +45,7 @@
                 <tr>
                     <td>${u.id}</td>
                     <td><c:out value="${u.username}"/></td>
-                    <td><c:out value="${u.realName}"/></td>
+                    <td><shop:mask type="name" value="${u.realName}"/></td>
                     <td><c:out value="${u.role}"/></td>
                     <td><c:out value="${u.status}"/></td>
                     <td>${u.failCount}</td>

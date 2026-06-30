@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.service.RegistrationResult;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +12,11 @@ import java.io.IOException;
 public class RegisterSubmitCommand implements Command {
 
     private final UserService userService;
+    private final AuditService auditService;
 
-    public RegisterSubmitCommand(UserService userService) {
+    public RegisterSubmitCommand(UserService userService, AuditService auditService) {
         this.userService = userService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -22,6 +25,7 @@ public class RegisterSubmitCommand implements Command {
         String realName = req.getParameter("realName");
         RegistrationResult result = userService.register(username, req.getParameter("password"), realName);
         if (result.getStatus() == RegistrationResult.Status.SUCCESS) {
+            CommandSupport.audit(req, auditService, "REGISTER", "username=" + safe(username));
             resp.sendRedirect(req.getContextPath() + "/app/login?registered=1");
             return null;
         }
@@ -30,6 +34,10 @@ public class RegisterSubmitCommand implements Command {
         req.setAttribute("realName", realName);
         req.setAttribute("error", messageFor(result));
         return "auth/register";
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.trim();
     }
 
     private String messageFor(RegistrationResult result) {

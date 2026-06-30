@@ -1,13 +1,18 @@
 package com.bookstore.web;
 
+import com.bookstore.dao.AuditRepository;
+import com.bookstore.model.AuditLog;
+import com.bookstore.service.AuditService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.Test;
 
+import java.time.LocalDateTime;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -27,7 +32,7 @@ class DispatcherServletAdminRoutesTest {
     }
 
     @Test
-    void servesAuditAdminDashboardRoute() throws Exception {
+    void servesAuditAdminLogRoute() throws Exception {
         TestableDispatcherServlet servlet = new TestableDispatcherServlet();
         servlet.init();
         RequestRecorder request = new RequestRecorder("/admin/audit");
@@ -36,12 +41,29 @@ class DispatcherServletAdminRoutesTest {
         servlet.get(request.proxy(), response.proxy());
 
         assertEquals(0, response.errorStatus);
-        assertEquals("/WEB-INF/views/admin/dashboard.jsp", request.forwardedPath);
+        assertEquals("/WEB-INF/views/admin/audit/list.jsp", request.forwardedPath);
     }
 
     private static final class TestableDispatcherServlet extends DispatcherServlet {
         private void get(HttpServletRequest request, HttpServletResponse response) throws Exception {
             doGet(request, response);
+        }
+
+        @Override
+        protected AuditService createAuditService() {
+            return new AuditService(new EmptyAuditRepository(), LocalDateTime::now);
+        }
+    }
+
+    private static final class EmptyAuditRepository implements AuditRepository {
+        @Override
+        public void insert(AuditLog log) {
+        }
+
+        @Override
+        public List<AuditLog> search(String username, String action, String keyword,
+                                     LocalDateTime from, LocalDateTime to, int limit) {
+            return List.of();
         }
     }
 

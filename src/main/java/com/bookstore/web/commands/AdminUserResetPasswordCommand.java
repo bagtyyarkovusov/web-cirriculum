@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.model.SessionUser;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.UserService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +12,11 @@ import java.io.IOException;
 public class AdminUserResetPasswordCommand implements Command {
 
     private final UserService userService;
+    private final AuditService auditService;
 
-    public AdminUserResetPasswordCommand(UserService userService) {
+    public AdminUserResetPasswordCommand(UserService userService, AuditService auditService) {
         this.userService = userService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -24,6 +27,8 @@ public class AdminUserResetPasswordCommand implements Command {
             String temporaryPassword = CommandSupport.optionalString(req, "temporaryPassword");
             boolean reset = userService.resetPassword(actor.getRole(), userId, temporaryPassword);
             if (reset) {
+                CommandSupport.audit(req, auditService, "USER_RESET_PASSWORD",
+                        "targetUserId=" + userId);
                 CommandSupport.redirectWithMessage(req, resp, "/app/admin/users",
                         "message", "密码已重置为：" + temporaryPassword);
             } else {

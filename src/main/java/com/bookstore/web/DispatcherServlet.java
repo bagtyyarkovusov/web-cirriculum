@@ -3,8 +3,10 @@ package com.bookstore.web;
 import com.bookstore.service.BookService;
 import com.bookstore.service.CartService;
 import com.bookstore.service.CategoryService;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.OrderService;
 import com.bookstore.service.UserService;
+import com.bookstore.web.commands.AdminAuditListCommand;
 import com.bookstore.web.commands.AdminBookFormCommand;
 import com.bookstore.web.commands.AdminBookListCommand;
 import com.bookstore.web.commands.AdminBookSaveCommand;
@@ -59,6 +61,7 @@ public class DispatcherServlet extends HttpServlet {
         BookService bookService = new BookService();
         CartService cartService = new CartService();
         CategoryService categoryService = new CategoryService();
+        AuditService auditService = createAuditService();
         OrderService orderService = new OrderService();
         UserService userService = new UserService();
         getRoutes.put("/books", new BookListCommand(bookService));
@@ -67,12 +70,12 @@ public class DispatcherServlet extends HttpServlet {
         getRoutes.put("/orders/detail", new OrderDetailCommand(orderService));
         getRoutes.put("/login", new LoginFormCommand());
         getRoutes.put("/register", new RegisterFormCommand());
-        getRoutes.put("/logout", new LogoutCommand());
+        getRoutes.put("/logout", new LogoutCommand(auditService));
         Command adminDashboard = (req, resp) -> "admin/dashboard";
         getRoutes.put("/admin", adminDashboard);
         getRoutes.put("/admin/", adminDashboard);
-        getRoutes.put("/admin/audit", adminDashboard);
-        getRoutes.put("/admin/audit/", adminDashboard);
+        getRoutes.put("/admin/audit", new AdminAuditListCommand(auditService));
+        getRoutes.put("/admin/audit/", new AdminAuditListCommand(auditService));
         getRoutes.put("/admin/books", new AdminBookListCommand(bookService));
         getRoutes.put("/admin/books/new", new AdminBookFormCommand(bookService, categoryService, false));
         getRoutes.put("/admin/books/edit", new AdminBookFormCommand(bookService, categoryService, true));
@@ -81,21 +84,21 @@ public class DispatcherServlet extends HttpServlet {
         getRoutes.put("/admin/orders/detail", new AdminOrderDetailCommand(orderService));
         getRoutes.put("/admin/users", new AdminUserListCommand(userService));
 
-        postRoutes.put("/login", new LoginSubmitCommand(userService));
-        postRoutes.put("/register", new RegisterSubmitCommand(userService));
+        postRoutes.put("/login", new LoginSubmitCommand(userService, auditService));
+        postRoutes.put("/register", new RegisterSubmitCommand(userService, auditService));
         postRoutes.put("/cart/add", new CartAddCommand(cartService));
         postRoutes.put("/cart/update", new CartUpdateCommand(cartService));
         postRoutes.put("/cart/remove", new CartRemoveCommand(cartService));
-        postRoutes.put("/checkout", new CheckoutCommand(orderService));
-        postRoutes.put("/orders/cancel", new OrderCancelCommand(orderService));
-        postRoutes.put("/orders/confirm", new OrderConfirmCommand(orderService));
-        postRoutes.put("/admin/books/save", new AdminBookSaveCommand(bookService));
-        postRoutes.put("/admin/books/status", new AdminBookStatusCommand(bookService));
-        postRoutes.put("/admin/categories/save", new AdminCategorySaveCommand(categoryService));
-        postRoutes.put("/admin/categories/delete", new AdminCategoryDeleteCommand(categoryService));
-        postRoutes.put("/admin/orders/ship", new AdminOrderShipCommand(orderService));
-        postRoutes.put("/admin/users/status", new AdminUserStatusCommand(userService));
-        postRoutes.put("/admin/users/reset-password", new AdminUserResetPasswordCommand(userService));
+        postRoutes.put("/checkout", new CheckoutCommand(orderService, auditService));
+        postRoutes.put("/orders/cancel", new OrderCancelCommand(orderService, auditService));
+        postRoutes.put("/orders/confirm", new OrderConfirmCommand(orderService, auditService));
+        postRoutes.put("/admin/books/save", new AdminBookSaveCommand(bookService, auditService));
+        postRoutes.put("/admin/books/status", new AdminBookStatusCommand(bookService, auditService));
+        postRoutes.put("/admin/categories/save", new AdminCategorySaveCommand(categoryService, auditService));
+        postRoutes.put("/admin/categories/delete", new AdminCategoryDeleteCommand(categoryService, auditService));
+        postRoutes.put("/admin/orders/ship", new AdminOrderShipCommand(orderService, auditService));
+        postRoutes.put("/admin/users/status", new AdminUserStatusCommand(userService, auditService));
+        postRoutes.put("/admin/users/reset-password", new AdminUserResetPasswordCommand(userService, auditService));
     }
 
     @Override
@@ -126,5 +129,9 @@ public class DispatcherServlet extends HttpServlet {
 
     private Command commandFor(String method, String path) {
         return "POST".equalsIgnoreCase(method) ? postRoutes.get(path) : getRoutes.get(path);
+    }
+
+    protected AuditService createAuditService() {
+        return new AuditService();
     }
 }

@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.model.SessionUser;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.OrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +12,11 @@ import java.io.IOException;
 public class OrderCancelCommand implements Command {
 
     private final OrderService orderService;
+    private final AuditService auditService;
 
-    public OrderCancelCommand(OrderService orderService) {
+    public OrderCancelCommand(OrderService orderService, AuditService auditService) {
         this.orderService = orderService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -23,6 +26,7 @@ public class OrderCancelCommand implements Command {
             SessionUser user = CommandSupport.currentUser(req);
             boolean cancelled = orderService.cancel(user.getId(), orderId);
             if (cancelled) {
+                CommandSupport.audit(req, auditService, "ORDER_CANCEL", "orderId=" + orderId);
                 CommandSupport.redirectWithMessage(req, resp, "/app/orders/detail?id=" + orderId,
                         "message", "订单已取消。");
             } else {

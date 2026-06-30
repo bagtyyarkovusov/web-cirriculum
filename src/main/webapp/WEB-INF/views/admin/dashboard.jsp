@@ -30,13 +30,16 @@
 
     <c:choose>
         <c:when test="${sessionScope.currentUser.role == 'AUDIT_ADMIN'}">
-            <p class="muted">审计管理员可查看审计入口；具体审计日志功能将在后续切片实现。</p>
+            <p class="muted">审计管理员可查看审计日志，不能进入业务管理模块。</p>
             <table>
                 <thead>
                     <tr><th>入口</th><th>状态</th></tr>
                 </thead>
                 <tbody>
-                    <tr><td>审计日志</td><td>待实现</td></tr>
+                    <tr>
+                        <td>审计日志</td>
+                        <td><a href="${pageContext.request.contextPath}/app/admin/audit">进入</a></td>
+                    </tr>
                 </tbody>
             </table>
         </c:when>

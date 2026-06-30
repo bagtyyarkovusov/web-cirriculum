@@ -1,5 +1,6 @@
 package com.bookstore.web.commands;
 
+import com.bookstore.service.AuditService;
 import com.bookstore.service.OrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -10,9 +11,11 @@ import java.io.IOException;
 public class AdminOrderShipCommand implements Command {
 
     private final OrderService orderService;
+    private final AuditService auditService;
 
-    public AdminOrderShipCommand(OrderService orderService) {
+    public AdminOrderShipCommand(OrderService orderService, AuditService auditService) {
         this.orderService = orderService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -24,6 +27,8 @@ public class AdminOrderShipCommand implements Command {
             boolean shipped = orderService.shipOrder(orderId, trackingNo);
             String path = "/app/admin/orders/detail?id=" + orderId;
             if (shipped) {
+                CommandSupport.audit(req, auditService, "ORDER_SHIP",
+                        "orderId=" + orderId + ",trackingNoSet=true");
                 CommandSupport.redirectWithMessage(req, resp, path, "message", "订单已发货。");
             } else {
                 CommandSupport.redirectWithMessage(req, resp, path, "error", "只有待发货订单可以发货。");

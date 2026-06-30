@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.model.SessionUser;
+import com.bookstore.service.AuditService;
 import com.bookstore.web.SessionKeys;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -23,6 +24,20 @@ final class CommandSupport {
             return user;
         }
         throw new IllegalStateException("请先登录。");
+    }
+
+    static void audit(HttpServletRequest req, AuditService auditService, String action, String detail) {
+        try {
+            auditService.log(optionalCurrentUser(req), action, detail, req.getRemoteAddr());
+        } catch (RuntimeException ignored) {
+            // Business action already succeeded; audit persistence must not change that outcome.
+        }
+    }
+
+    static SessionUser optionalCurrentUser(HttpServletRequest req) {
+        HttpSession session = req.getSession(false);
+        Object value = session == null ? null : session.getAttribute(SessionKeys.CURRENT_USER);
+        return value instanceof SessionUser user ? user : null;
     }
 
     static long requiredLong(HttpServletRequest req, String name) {

@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.model.SessionUser;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.OrderService;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,9 +12,11 @@ import java.io.IOException;
 public class OrderConfirmCommand implements Command {
 
     private final OrderService orderService;
+    private final AuditService auditService;
 
-    public OrderConfirmCommand(OrderService orderService) {
+    public OrderConfirmCommand(OrderService orderService, AuditService auditService) {
         this.orderService = orderService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -23,6 +26,7 @@ public class OrderConfirmCommand implements Command {
             SessionUser user = CommandSupport.currentUser(req);
             boolean confirmed = orderService.confirmReceipt(user.getId(), orderId);
             if (confirmed) {
+                CommandSupport.audit(req, auditService, "ORDER_CONFIRM", "orderId=" + orderId);
                 CommandSupport.redirectWithMessage(req, resp, "/app/orders/detail?id=" + orderId,
                         "message", "已确认收货。");
             } else {

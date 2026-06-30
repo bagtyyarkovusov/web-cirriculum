@@ -1,6 +1,7 @@
 package com.bookstore.web.commands;
 
 import com.bookstore.service.AuthResult;
+import com.bookstore.service.AuditService;
 import com.bookstore.service.UserService;
 import com.bookstore.web.SessionKeys;
 
@@ -14,9 +15,11 @@ import java.time.LocalDateTime;
 public class LoginSubmitCommand implements Command {
 
     private final UserService userService;
+    private final AuditService auditService;
 
-    public LoginSubmitCommand(UserService userService) {
+    public LoginSubmitCommand(UserService userService, AuditService auditService) {
         this.userService = userService;
+        this.auditService = auditService;
     }
 
     @Override
@@ -27,13 +30,20 @@ public class LoginSubmitCommand implements Command {
             HttpSession session = req.getSession(true);
             session.setAttribute(SessionKeys.CURRENT_USER, result.getUser());
             session.setAttribute(SessionKeys.LAST_ACTIVITY_AT, System.currentTimeMillis());
+            CommandSupport.audit(req, auditService, "LOGIN_SUCCESS", "username=" + safe(username));
             resp.sendRedirect(req.getContextPath() + "/app/books");
             return null;
         }
 
+        CommandSupport.audit(req, auditService, "LOGIN_FAILURE",
+                "username=" + safe(username) + ",status=" + result.getStatus());
         req.setAttribute("username", username);
         req.setAttribute("error", messageFor(result));
         return "auth/login";
+    }
+
+    private String safe(String value) {
+        return value == null ? "" : value.trim();
     }
 
     private String messageFor(AuthResult result) {
