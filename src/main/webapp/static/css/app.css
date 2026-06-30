@@ -1,0 +1,55 @@
+@charset "UTF-8";
+/* 网上书店 design system — product register, light, restrained clean-blue. */
+:root {
+  --accent: oklch(0.55 0.15 255);
+  --accent-hover: oklch(0.49 0.15 255);
+  --accent-weak: oklch(0.95 0.03 255);
+  --accent-ring: oklch(0.70 0.12 255 / 0.40);
+  --bg: oklch(0.985 0.004 255);
+  --surface: oklch(0.995 0.002 255);
+  --panel: oklch(0.97 0.005 255);
+  --border: oklch(0.92 0.005 255);
+  --text: oklch(0.32 0.02 260);
+  --muted: oklch(0.55 0.02 260);
+  --subtle: oklch(0.68 0.015 260);
+  --pay-fg: oklch(0.50 0.10 75);  --pay-bg: oklch(0.95 0.05 80);
+  --ship-fg: oklch(0.48 0.13 285); --ship-bg: oklch(0.95 0.04 285);
+  --pending-fg: oklch(0.48 0.15 255); --pending-bg: oklch(0.95 0.03 255);
+  --done-fg: oklch(0.48 0.10 150); --done-bg: oklch(0.95 0.05 150);
+  --cancel-fg: oklch(0.50 0.01 260); --cancel-bg: oklch(0.95 0.004 260);
+  --danger: oklch(0.55 0.16 25);
+  --radius: 8px; --radius-sm: 6px;
+  --shadow: 0 1px 2px oklch(0.5 0.02 260 / 0.06), 0 4px 12px oklch(0.5 0.02 260 / 0.05);
+  --ease: cubic-bezier(0.22, 1, 0.36, 1); --dur: 160ms;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0; background: var(--bg); color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, "PingFang SC", "Microsoft YaHei", sans-serif;
+  font-size: 16px; line-height: 1.6; -webkit-font-smoothing: antialiased;
+}
+a { color: var(--accent); text-decoration: none; }
+a:hover { text-decoration: underline; }
+h1, h2, h3 { color: var(--text); line-height: 1.25; margin: 0 0 0.5em; font-weight: 600; }
+h1 { font-size: 1.75rem; font-weight: 650; letter-spacing: -0.01em; }
+h2 { font-size: 1.375rem; }
+h3 { font-size: 1.125rem; }
+.num { font-variant-numeric: tabular-nums; }
+.muted { color: var(--muted); }
+.subtle { color: var(--subtle); font-size: 0.875rem; }
+.container { max-width: 1080px; margin: 0 auto; padding: 24px 24px 56px; }
+.page-head { display: flex; align-items: baseline; justify-content: space-between; gap: 16px; margin: 8px 0 20px; }
+.page-head p { margin: 4px 0 0; }
+.topbar { position: sticky; top: 0; z-index: 10; background: var(--panel); border-bottom: 1px solid var(--border); }
+.topbar-inner { max-width: 1080px; margin: 0 auto; display: flex; align-items: center; gap: 16px; padding: 10px 24px; }
+.brand { display: inline-flex; align-items: center; gap: 8px; font-weight: 650; color: var(--text); }
+.brand .icon { color: var(--accent); }
+.topnav { display: flex; align-items: center; gap: 2px; }
+.topnav a { color: var(--muted); padding: 6px 10px; border-radius: var(--radius-sm); }
+.topnav a:hover { color: var(--text); background: var(--accent-weak); text-decoration: none; }
+.topnav a.active { color: var(--accent); }
+.topbar-spacer { flex: 1; }
+.whoami { display: inline-flex; align-items: center; gap: 8px; color: var(--muted); font-size: 0.9rem; }
+.icon { width: 20px; height: 20px; display: inline-block; vertical-align: -4px; fill: none; stroke: currentColor; stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+.icon-sm { width: 16px; height: 16px; vertical-align: -3px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
