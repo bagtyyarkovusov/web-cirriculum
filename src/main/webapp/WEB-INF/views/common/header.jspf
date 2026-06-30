@@ -1,0 +1,37 @@
+<%-- Shared sticky top bar. Storefront vs admin shell selected by the
+     page-scoped `section` variable (admin views set section='admin' before
+     including this). Uses `c` tags already declared by head.jspf / the view. --%>
+<header class="topbar">
+  <div class="topbar-inner">
+    <a class="brand" href="${ctx}/app/books"><svg class="icon"><use href="#i-book"/></svg>网上书店</a>
+    <nav class="topnav">
+      <c:choose>
+        <c:when test="${not empty sessionScope.currentUser and section == 'admin'}">
+          <a href="${ctx}/app/admin">管理后台</a>
+        </c:when>
+        <c:otherwise>
+          <a href="${ctx}/app/books">图书</a>
+          <c:if test="${not empty sessionScope.currentUser}">
+            <a href="${ctx}/app/cart">购物车</a>
+            <a href="${ctx}/app/orders">我的订单</a>
+          </c:if>
+        </c:otherwise>
+      </c:choose>
+    </nav>
+    <span class="topbar-spacer"></span>
+    <c:choose>
+      <c:when test="${not empty sessionScope.currentUser}">
+        <span class="whoami"><svg class="icon icon-sm"><use href="#i-user"/></svg>
+          <c:out value="${sessionScope.currentUser.username}"/>
+          <span class="pill pill-pending"><c:out value="${sessionScope.currentUser.role}"/></span>
+        </span>
+        <a class="btn btn-ghost btn-sm" href="${ctx}/app/logout"><svg class="icon icon-sm"><use href="#i-logout"/></svg>退出</a>
+      </c:when>
+      <c:otherwise>
+        <a class="btn btn-ghost btn-sm" href="${ctx}/app/login">登录</a>
+        <a class="btn btn-primary btn-sm" href="${ctx}/app/register">注册</a>
+      </c:otherwise>
+    </c:choose>
+  </div>
+</header>
+<main class="container">

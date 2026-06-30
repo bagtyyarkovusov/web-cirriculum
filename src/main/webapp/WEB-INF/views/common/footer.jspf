@@ -1,0 +1,7 @@
+<%-- Shared footer: closes the main container, credit line, closes body/html. --%>
+</main>
+<footer class="container subtle" style="padding-top:0;padding-bottom:32px">
+  网上书店管理系统课程设计 · Bagtyyar Kovusov 312024805043
+</footer>
+</body>
+</html>
