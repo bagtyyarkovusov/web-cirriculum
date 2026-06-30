@@ -22,3 +22,6 @@ target/
 
 # Local env overrides
 src/main/resources/db.local.properties
+
+# Deliverables intermediate render output (duplicate PDFs + per-page PNG renders)
+deliverables/rendered/
