@@ -1,0 +1,9 @@
+<%-- Order-status pill. Caller sets `pillStatus` to the OrderStatus name
+     (order.statusValue) before including. Read as UTF-8 via jsp-property-group. --%>
+<c:choose>
+  <c:when test="${pillStatus == 'PENDING_PAY'}"><span class="pill pill-pay">待支付</span></c:when>
+  <c:when test="${pillStatus == 'PENDING_SHIP'}"><span class="pill pill-pending">待发货</span></c:when>
+  <c:when test="${pillStatus == 'SHIPPED'}"><span class="pill pill-ship">已发货</span></c:when>
+  <c:when test="${pillStatus == 'COMPLETED'}"><span class="pill pill-done">已完成</span></c:when>
+  <c:otherwise><span class="pill pill-cancel">已取消</span></c:otherwise>
+</c:choose>
