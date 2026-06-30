@@ -4,9 +4,9 @@
 
 ## 交付内容
 
-- `reports/网上书店-技术报告.docx` / `.pdf`：技术报告，已渲染验证，共 75 页。
-- `reports/网上书店-系统使用说明书.docx` / `.pdf`：系统使用说明书，已渲染验证，共 15 页。
-- `reports/网上书店-课程设计报告.docx` / `.pdf`：课程设计报告，已渲染验证，共 8 页。
+- `reports/网上书店-技术报告.docx` / `.pdf`：技术报告，共 75 页。
+- `reports/网上书店-系统使用说明书.docx` / `.pdf`：系统使用说明书，共 15 页。
+- `reports/网上书店-课程设计报告.docx` / `.pdf`：课程设计报告，共 8 页。
 - `screenshots/`：最终 DB-backed 浏览器烟测截图。
 - `db/bookstore-backup-2026-06-30.sql`：最终演示数据库备份。
 - `smoke-test-report.md`：最终烟测记录。
@@ -29,4 +29,3 @@ mvn -q compile exec:java -Dexec.mainClass=com.bookstore.Launcher
 访问：`http://localhost:8080/app/books`
 
 演示账号以 `src/main/resources/seed.sql` 为准；交付文档正文不重复列出演示口令。
-
