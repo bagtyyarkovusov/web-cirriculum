@@ -1,8 +1,11 @@
 package com.bookstore.web;
 
 import com.bookstore.dao.AuditRepository;
+import com.bookstore.dao.StatsRepository;
 import com.bookstore.model.AuditLog;
+import com.bookstore.model.SalesStat;
 import com.bookstore.service.AuditService;
+import com.bookstore.service.StatsService;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -44,6 +47,19 @@ class DispatcherServletAdminRoutesTest {
         assertEquals("/WEB-INF/views/admin/audit/list.jsp", request.forwardedPath);
     }
 
+    @Test
+    void servesOperatorAdminStatsRoute() throws Exception {
+        TestableDispatcherServlet servlet = new TestableDispatcherServlet();
+        servlet.init();
+        RequestRecorder request = new RequestRecorder("/admin/stats");
+        ResponseRecorder response = new ResponseRecorder();
+
+        servlet.get(request.proxy(), response.proxy());
+
+        assertEquals(0, response.errorStatus);
+        assertEquals("/WEB-INF/views/admin/stats.jsp", request.forwardedPath);
+    }
+
     private static final class TestableDispatcherServlet extends DispatcherServlet {
         private void get(HttpServletRequest request, HttpServletResponse response) throws Exception {
             doGet(request, response);
@@ -52,6 +68,11 @@ class DispatcherServletAdminRoutesTest {
         @Override
         protected AuditService createAuditService() {
             return new AuditService(new EmptyAuditRepository(), LocalDateTime::now);
+        }
+
+        @Override
+        protected StatsService createStatsService() {
+            return new StatsService(new EmptyStatsRepository());
         }
     }
 
@@ -63,6 +84,13 @@ class DispatcherServletAdminRoutesTest {
         @Override
         public List<AuditLog> search(String username, String action, String keyword,
                                      LocalDateTime from, LocalDateTime to, int limit) {
+            return List.of();
+        }
+    }
+
+    private static final class EmptyStatsRepository implements StatsRepository {
+        @Override
+        public List<SalesStat> findDailySales() {
             return List.of();
         }
     }

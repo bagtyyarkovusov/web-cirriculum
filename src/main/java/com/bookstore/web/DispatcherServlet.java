@@ -5,6 +5,7 @@ import com.bookstore.service.CartService;
 import com.bookstore.service.CategoryService;
 import com.bookstore.service.AuditService;
 import com.bookstore.service.OrderService;
+import com.bookstore.service.StatsService;
 import com.bookstore.service.UserService;
 import com.bookstore.web.commands.AdminAuditListCommand;
 import com.bookstore.web.commands.AdminBookFormCommand;
@@ -17,6 +18,7 @@ import com.bookstore.web.commands.AdminCategorySaveCommand;
 import com.bookstore.web.commands.AdminOrderDetailCommand;
 import com.bookstore.web.commands.AdminOrderListCommand;
 import com.bookstore.web.commands.AdminOrderShipCommand;
+import com.bookstore.web.commands.AdminStatsCommand;
 import com.bookstore.web.commands.AdminUserListCommand;
 import com.bookstore.web.commands.AdminUserResetPasswordCommand;
 import com.bookstore.web.commands.AdminUserStatusCommand;
@@ -63,6 +65,7 @@ public class DispatcherServlet extends HttpServlet {
         CategoryService categoryService = new CategoryService();
         AuditService auditService = createAuditService();
         OrderService orderService = new OrderService();
+        StatsService statsService = createStatsService();
         UserService userService = new UserService();
         getRoutes.put("/books", new BookListCommand(bookService));
         getRoutes.put("/cart", new CartViewCommand(cartService));
@@ -76,6 +79,8 @@ public class DispatcherServlet extends HttpServlet {
         getRoutes.put("/admin/", adminDashboard);
         getRoutes.put("/admin/audit", new AdminAuditListCommand(auditService));
         getRoutes.put("/admin/audit/", new AdminAuditListCommand(auditService));
+        getRoutes.put("/admin/stats", new AdminStatsCommand(statsService));
+        getRoutes.put("/admin/stats/", new AdminStatsCommand(statsService));
         getRoutes.put("/admin/books", new AdminBookListCommand(bookService));
         getRoutes.put("/admin/books/new", new AdminBookFormCommand(bookService, categoryService, false));
         getRoutes.put("/admin/books/edit", new AdminBookFormCommand(bookService, categoryService, true));
@@ -133,5 +138,9 @@ public class DispatcherServlet extends HttpServlet {
 
     protected AuditService createAuditService() {
         return new AuditService();
+    }
+
+    protected StatsService createStatsService() {
+        return new StatsService();
     }
 }

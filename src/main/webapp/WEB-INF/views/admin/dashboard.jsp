@@ -63,6 +63,10 @@
                         <td><a href="${pageContext.request.contextPath}/app/admin/orders">进入</a></td>
                     </tr>
                     <tr>
+                        <td>销售统计</td>
+                        <td><a href="${pageContext.request.contextPath}/app/admin/stats">进入</a></td>
+                    </tr>
+                    <tr>
                         <td>用户管理</td>
                         <td><a href="${pageContext.request.contextPath}/app/admin/users">进入</a></td>
                     </tr>
