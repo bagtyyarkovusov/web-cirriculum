@@ -66,7 +66,7 @@ def configure_document(doc: Document):
 
     footer = section.footer.paragraphs[0]
     footer.alignment = WD_ALIGN_PARAGRAPH.CENTER
-    run = footer.add_run("网上书店管理系统课程设计")
+    run = footer.add_run("网上书店管理系统课程设计 · Bagtyyar Kovusov 312024805043")
     set_run_font(run, size=10)
 
 
@@ -87,6 +87,8 @@ def add_cover(doc: Document, title: str, subtitle: str, doc_type: str):
     rows = [
         ("文档类型", doc_type),
         ("项目名称", "网上书店管理系统"),
+        ("学生姓名", "Bagtyyar Kovusov"),
+        ("学号", "312024805043"),
         ("技术栈", "Servlet + JSP + JavaBean + JDBC + MySQL"),
         ("安全设计", "SM3 密码摘要、SM4 敏感字段加密、RBAC、审计日志"),
         ("完成日期", "2026 年 6 月 30 日"),
