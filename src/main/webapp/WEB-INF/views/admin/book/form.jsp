@@ -9,7 +9,7 @@
   <div><h1><c:choose><c:when test="${book.id > 0}">编辑图书</c:when><c:otherwise>新增图书</c:otherwise></c:choose></h1></div>
   <a class="btn btn-ghost btn-sm" href="${ctx}/app/admin/books">返回图书管理</a>
 </div>
-<div class="form-panel" style="max-width:560px;margin-top:0">
+<div class="form-panel max-w-560 mt-0">
   <form method="post" action="${ctx}/app/admin/books/save">
     <input type="hidden" name="id" value="${book.id}">
     <div class="field"><label>书名</label><input name="title" value="${fn:escapeXml(book.title)}" required></div>

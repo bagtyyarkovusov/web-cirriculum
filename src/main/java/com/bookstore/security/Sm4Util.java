@@ -80,15 +80,31 @@ public final class Sm4Util {
     }
 
     private static byte[] loadConfiguredKey() {
-        Properties p = new Properties();
-        try (InputStream in = Sm4Util.class.getClassLoader().getResourceAsStream("db.properties")) {
-            if (in != null) {
-                p.load(in);
-            }
-        } catch (IOException ignored) {
-            // fall back to the default dev key below
+        String value = System.getProperty("sm4.key");
+        if (value == null || value.isBlank()) {
+            value = System.getenv("SM4_KEY");
         }
-        return hexToBytes(p.getProperty("sm4.key", "0123456789abcdeffedcba9876543210"));
+        if (value == null || value.isBlank()) {
+            Properties p = new Properties();
+            try (InputStream in = Sm4Util.class.getClassLoader().getResourceAsStream("db.properties")) {
+                if (in != null) {
+                    p.load(in);
+                }
+            } catch (IOException ignored) {
+                // properties unavailable
+            }
+            value = p.getProperty("sm4.key");
+        }
+        if (value == null || value.isBlank()) {
+            throw new IllegalStateException(
+                    "SM4 key is not configured. Set the SM4_KEY environment variable, "
+                            + "the sm4.key system property, or sm4.key in db.properties.");
+        }
+        String hex = value.trim();
+        if (!hex.matches("^[0-9a-fA-F]{32}$")) {
+            throw new IllegalStateException("SM4 key must be 32 hex characters (16 bytes), got: " + hex);
+        }
+        return hexToBytes(hex);
     }
 
     private static byte[] hexToBytes(String hex) {

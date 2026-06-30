@@ -23,9 +23,12 @@
 ```bash
 mysql -uroot < src/main/resources/schema.sql
 mysql -uroot < src/main/resources/seed.sql
+export SM4_KEY=abcdef1234567890abcdef1234567890
 mvn -q compile exec:java -Dexec.mainClass=com.bookstore.Launcher
 ```
 
 访问：`http://localhost:8080/app/books`
+
+说明：`SM4_KEY` 必须为 32 位十六进制字符（16 字节），用于手机号、地址等敏感字段的 SM4 加解密。也可用 `-Dsm4.key=<your-key>` 传入，或在 `db.properties` 中配置 `sm4.key`。
 
 演示账号以 `src/main/resources/seed.sql` 为准；交付文档正文不重复列出演示口令。

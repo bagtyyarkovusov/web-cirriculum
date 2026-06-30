@@ -16,8 +16,8 @@
 <c:if test="${not empty message}"><div class="flash flash-ok"><svg class="icon icon-sm"><use href="#i-check"/></svg><c:out value="${message}"/></div></c:if>
 <c:if test="${not empty error}"><div class="flash flash-err"><svg class="icon icon-sm"><use href="#i-x"/></svg><c:out value="${error}"/></div></c:if>
 
-<div class="panel" style="margin-bottom:16px">
-  <table class="table" style="border:0">
+<div class="panel mb-16">
+  <table class="table border-0">
     <tbody>
       <tr><th>ID</th><td class="num">${order.id}</td></tr>
       <tr><th>用户ID</th><td class="num">${order.userId}</td></tr>
@@ -32,11 +32,11 @@
 </div>
 
 <c:if test="${order.statusValue == 'PENDING_SHIP'}">
-  <div class="panel" style="margin-bottom:16px">
+  <div class="panel mb-16">
     <h3>发货</h3>
     <form method="post" action="${ctx}/app/admin/orders/ship" class="book-actions">
       <input type="hidden" name="id" value="${order.id}">
-      <div class="field" style="margin:0;flex:1;min-width:220px">
+      <div class="field m-0 flex-1 min-w-220">
         <input name="trackingNo" placeholder="快递单号" required>
       </div>
       <button class="btn btn-primary" type="submit"><svg class="icon icon-sm"><use href="#i-box"/></svg>标记发货</button>

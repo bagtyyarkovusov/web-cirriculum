@@ -23,5 +23,9 @@ target/
 # Local env overrides
 src/main/resources/db.local.properties
 
+# Python virtual environment for deliverable scripts
+.venv/
+__pycache__/
+
 # Deliverables intermediate render output (duplicate PDFs + per-page PNG renders)
 deliverables/rendered/

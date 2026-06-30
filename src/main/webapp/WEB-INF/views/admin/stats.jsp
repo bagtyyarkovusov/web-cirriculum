@@ -6,7 +6,7 @@
 <%@ include file="/WEB-INF/views/common/header.jspf" %>
 <div class="page-head"><div><h1>销售统计</h1>
   <p class="muted">统计已支付、已发货和已完成订单，已取消订单不计入销售额。</p></div></div>
-<div class="panel" style="margin-bottom:16px">
+<div class="panel mb-16">
   <div id="chart"></div>
 </div>
 <c:choose>

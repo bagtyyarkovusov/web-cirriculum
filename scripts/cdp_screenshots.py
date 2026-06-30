@@ -112,7 +112,7 @@ def login(cdp: CDP, username: str):
     cdp.navigate(f"{BASE}/login")
     cdp.eval(f"document.querySelector('input[name=username]').value = {json.dumps(username)}")
     cdp.eval("document.querySelector('input[name=password]').value = 'Bookstore@123'")
-    cdp.eval("document.querySelector('form[action*=login] button[type=submit]').click()")
+    cdp.eval("document.querySelector('form[action*=\\\"login\\\"] button[type=submit]').click()")
     time.sleep(0.7)
 
 
@@ -130,7 +130,7 @@ def main():
 
         # Add first book to cart
         cdp.navigate(f"{BASE}/books")
-        cdp.eval("document.querySelector('form[action*=cart/add] button[type=submit]').click()")
+        cdp.eval("document.querySelector('form[action*=\\\"cart/add\\\"] button[type=submit]').click()")
         time.sleep(0.7)
 
         # 02 cart
@@ -138,28 +138,25 @@ def main():
         cdp.screenshot("02-customer-cart-updated.png")
 
         # Checkout
-        cdp.eval("document.querySelector('form[action*=checkout] button[type=submit]').click()")
+        cdp.eval("document.querySelector('form[action*=\\\"checkout\\\"] button[type=submit]').click()")
         time.sleep(0.7)
 
-        # 03 newest order detail
+        # 03 newest order detail — capture the detail URL so 03b can return to it.
         cdp.navigate(f"{BASE}/orders")
-        cdp.eval("document.querySelector('a[href*=orders/detail]').click()")
-        time.sleep(0.7)
+        time.sleep(0.5)
+        detail_url = None
+        for _ in range(10):
+            res = cdp.eval("(document.querySelector('a[href*=\\\"orders/detail\\\"]') || {}).href")
+            result = res.get("result", {}).get("result", {})
+            detail_url = result.get("value")
+            if detail_url:
+                break
+            time.sleep(0.3)
+        if not detail_url:
+            raise RuntimeError("No order detail link found on /orders")
+        cdp.navigate(detail_url)
+        time.sleep(0.3)
         cdp.screenshot("03-customer-order-detail.png")
-
-        # 03b completed order
-        cdp.navigate(f"{BASE}/orders")
-        cdp.eval("""
-            const rows = document.querySelectorAll('table tbody tr');
-            for (const row of rows) {
-                if (row.textContent.includes('已完成')) {
-                    row.querySelector('a[href*=orders/detail]').click();
-                    break;
-                }
-            }
-        """)
-        time.sleep(0.7)
-        cdp.screenshot("03b-customer-order-completed.png")
 
         # Logout / operator
         cdp.navigate(f"{BASE}/logout")
@@ -178,7 +175,7 @@ def main():
         cdp.eval("document.querySelector('input[name=isbn]').value = '9780000000001'")
         cdp.eval("document.querySelector('input[name=price]').value = '59.00'")
         cdp.eval("document.querySelector('input[name=stock]').value = '20'")
-        cdp.eval("document.querySelector('form[action*=books/save] button[type=submit]').click()")
+        cdp.eval("document.querySelector('form[action*=\\\"books/save\\\"] button[type=submit]').click()")
         time.sleep(0.7)
 
         # 05 book list
@@ -195,15 +192,30 @@ def main():
             const rows = document.querySelectorAll('table tbody tr');
             for (const row of rows) {
                 if (row.textContent.includes('待发货')) {
-                    row.querySelector('a[href*=orders/detail]').click();
+                    row.querySelector('a[href*="orders/detail"]').click();
                     break;
                 }
             }
         """)
         time.sleep(0.7)
         cdp.eval("document.querySelector('input[name=trackingNo]').value = 'YT202606300099'")
-        cdp.eval("document.querySelector('form[action*=orders/ship] button[type=submit]').click()")
+        cdp.eval("document.querySelector('form[action*=\\\"orders/ship\\\"] button[type=submit]').click()")
         time.sleep(0.7)
+
+        # Customer confirms receipt so 03b can show a truly completed order.
+        cdp.navigate(f"{BASE}/logout")
+        time.sleep(0.3)
+        login(cdp, "customer")
+        cdp.navigate(detail_url)
+        time.sleep(0.3)
+        cdp.eval("document.querySelector('form[action*=\\\"orders/confirm\\\"] button[type=submit]').click()")
+        time.sleep(0.7)
+        cdp.screenshot("03b-customer-order-completed.png")
+
+        # Back to operator for remaining admin screenshots
+        cdp.navigate(f"{BASE}/logout")
+        time.sleep(0.3)
+        login(cdp, "operator")
 
         # 07 orders shipped
         cdp.navigate(f"{BASE}/admin/orders")

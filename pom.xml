@@ -84,6 +84,12 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>3.2.5</version>
+        <configuration>
+          <systemPropertyVariables>
+            <!-- Test-only SM4 key (16 bytes as 32 hex chars). Production must set SM4_KEY env var. -->
+            <sm4.key>abcdefabcdefabcdefabcdefabcdefab</sm4.key>
+          </systemPropertyVariables>
+        </configuration>
       </plugin>
       <!-- Course-spec embedded run:
            mvn -q compile exec:java -Dexec.mainClass=com.bookstore.Launcher -->

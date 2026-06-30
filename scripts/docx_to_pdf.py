@@ -22,7 +22,7 @@ from reportlab.platypus import (
     ListFlowable,
     ListItem,
     PageBreak,
-    Paragraph,
+    Paragraph as RLParagraph,
     SimpleDocTemplate,
     Spacer,
     Table as RLTable,
@@ -84,7 +84,7 @@ def clean_text(text: str) -> str:
     return text
 
 
-def extract_inline_images(paragraph: Paragraph):
+def extract_inline_images(paragraph: DocxParagraph):
     """Return list of (image_bytes, ext) for inline images in paragraph."""
     images = []
     for run in paragraph.runs:
@@ -111,21 +111,16 @@ def iter_block_items(doc):
             yield Table(child, doc)
 
 
-def is_list_paragraph(p: Paragraph):
+def is_list_paragraph(p: DocxParagraph) -> bool:
     numPr = p._element.find(".//" + qn("w:numPr"))
     return numPr is not None
 
 
-def is_list_bullet(p: Paragraph):
+def is_list_bullet(p: DocxParagraph) -> bool:
     if not is_list_paragraph(p):
         return False
-    numPr = p._element.find(".//" + qn("w:numPr"))
-    numId = numPr.find(qn("w:numId"))
-    if numId is not None:
-        val = numId.get(qn("w:val"))
-        # In many docx, bullet lists use numId 1 or similar; default to bullet unless we know it's numbered
-        return True
-    return False
+    # The DOCX generator uses explicit "List Bullet" / "List Number" styles.
+    return p.style.name.startswith("List Bullet")
 
 
 def render_docx(docx_path: Path, pdf_path: Path):
@@ -214,7 +209,25 @@ def render_docx(docx_path: Path, pdf_path: Path):
                 pass
 
         if text.strip():
-            story.append(Paragraph(clean_text(text), styles[style_name]))
+            story.append(RLParagraph(clean_text(text), styles[style_name]))
+
+    # Extract footer text from the DOCX section so it appears on every PDF page.
+    footer_text = ""
+    for section in doc.sections:
+        for paragraph in section.footer.paragraphs:
+            if paragraph.text.strip():
+                footer_text = paragraph.text.strip()
+                break
+        if footer_text:
+            break
+
+    def draw_footer(canvas, doc):
+        if not footer_text:
+            return
+        canvas.saveState()
+        canvas.setFont(CHINESE_FONT, 9)
+        canvas.drawCentredString(A4[0] / 2, 1 * cm, footer_text)
+        canvas.restoreState()
 
     doc_template = SimpleDocTemplate(
         str(pdf_path),
@@ -224,7 +237,7 @@ def render_docx(docx_path: Path, pdf_path: Path):
         topMargin=2.5 * cm,
         bottomMargin=2 * cm,
     )
-    doc_template.build(story)
+    doc_template.build(story, onFirstPage=draw_footer, onLaterPages=draw_footer)
     print(pdf_path)
 
 

@@ -8,9 +8,9 @@
 <div class="page-head"><div><h1>分类管理</h1></div></div>
 <c:if test="${not empty message}"><div class="flash flash-ok"><svg class="icon icon-sm"><use href="#i-check"/></svg><c:out value="${message}"/></div></c:if>
 <c:if test="${not empty error}"><div class="flash flash-err"><svg class="icon icon-sm"><use href="#i-x"/></svg><c:out value="${error}"/></div></c:if>
-<div class="panel" style="margin-bottom:16px">
+<div class="panel mb-16">
   <form method="post" action="${ctx}/app/admin/categories/save" class="book-actions">
-    <input name="name" placeholder="新分类名称" required style="width:auto">
+    <input name="name" placeholder="新分类名称" required class="w-auto">
     <button class="btn btn-primary btn-sm" type="submit"><svg class="icon icon-sm"><use href="#i-plus"/></svg>新增分类</button>
   </form>
 </div>
@@ -23,7 +23,7 @@
         <td>
           <form method="post" action="${ctx}/app/admin/categories/save" class="book-actions">
             <input type="hidden" name="id" value="${cat.id}">
-            <input name="name" value="${fn:escapeXml(cat.name)}" required style="width:auto">
+            <input name="name" value="${fn:escapeXml(cat.name)}" required class="w-auto">
             <button class="btn btn-secondary btn-sm" type="submit">保存</button>
           </form>
         </td>

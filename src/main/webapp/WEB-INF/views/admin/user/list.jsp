@@ -28,7 +28,7 @@
         <td class="right num">${u.failCount}</td>
         <td class="subtle"><c:out value="${u.lockUntil}"/></td>
         <td>
-          <div class="book-actions" style="align-items:flex-start">
+          <div class="user-actions align-start">
             <c:choose>
               <c:when test="${u.status == 'ACTIVE'}">
                 <form method="post" action="${ctx}/app/admin/users/status">
@@ -45,9 +45,9 @@
                 </form>
               </c:otherwise>
             </c:choose>
-            <form method="post" action="${ctx}/app/admin/users/reset-password" class="book-actions">
+            <form method="post" action="${ctx}/app/admin/users/reset-password" class="user-actions">
               <input type="hidden" name="id" value="${u.id}">
-              <input name="temporaryPassword" value="${fn:escapeXml(tempPassword)}" required style="width:120px">
+              <input name="temporaryPassword" value="${fn:escapeXml(tempPassword)}" required class="w-120">
               <button class="btn btn-ghost btn-sm" type="submit">重置密码</button>
             </form>
           </div>

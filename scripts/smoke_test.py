@@ -68,30 +68,15 @@ def main():
         driver.find_element(By.CSS_SELECTOR, "form[action*='checkout'] button[type=submit]").click()
         time.sleep(0.5)
 
-        # 03 customer order detail (newest order)
+        # 03 customer order detail (newest order) — capture URL so 03b can return to it.
         driver.get(f"{BASE}/orders")
         time.sleep(0.5)
         links = driver.find_elements(By.CSS_SELECTOR, "a[href*='orders/detail']")
-        if links:
-            links[0].click()
-            time.sleep(0.5)
+        detail_url = links[0].get_attribute("href") if links else None
+        if detail_url:
+            driver.get(detail_url)
+            time.sleep(0.3)
         screenshot(driver, "03-customer-order-detail.png")
-
-        # 03b completed order
-        driver.get(f"{BASE}/orders")
-        time.sleep(0.5)
-        # find a completed order link by status text
-        rows = driver.find_elements(By.CSS_SELECTOR, "table tbody tr")
-        completed_href = None
-        for row in rows:
-            if "已完成" in row.text:
-                link = row.find_element(By.CSS_SELECTOR, "a[href*='orders/detail']")
-                completed_href = link.get_attribute("href")
-                break
-        if completed_href:
-            driver.get(completed_href)
-            time.sleep(0.5)
-        screenshot(driver, "03b-customer-order-completed.png")
 
         # Logout and login as operator
         driver.get(f"{BASE}/logout")
@@ -144,6 +129,22 @@ def main():
             tracking.send_keys("YT202606300099")
             driver.find_element(By.CSS_SELECTOR, "button[type=submit]").click()
             time.sleep(0.5)
+
+        # Customer confirms receipt so 03b shows a truly completed order.
+        driver.get(f"{BASE}/logout")
+        time.sleep(0.3)
+        login(driver, "customer")
+        if detail_url:
+            driver.get(detail_url)
+            time.sleep(0.3)
+            driver.find_element(By.CSS_SELECTOR, "form[action*='orders/confirm'] button[type=submit]").click()
+            time.sleep(0.5)
+        screenshot(driver, "03b-customer-order-completed.png")
+
+        # Back to operator for remaining admin screenshots
+        driver.get(f"{BASE}/logout")
+        time.sleep(0.3)
+        login(driver, "operator")
 
         # 07 order shipped
         driver.get(f"{BASE}/admin/orders")
